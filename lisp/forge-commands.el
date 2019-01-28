@@ -320,7 +320,8 @@ Prefer a topic over a branch and that over a commit."
                          (car (member "origin/master" branches))))))
      (list source target)))
   (let* ((repo (forge-get-repository t))
-         (buf (forge--prepare-post-buffer repo "new-pullreq")))
+         (buf (forge--prepare-post-buffer repo "new-pullreq"
+                                          :header "New Pull Request")))
     (with-current-buffer buf
       (setq forge--buffer-base-branch target)
       (setq forge--buffer-head-branch source)
@@ -332,7 +333,8 @@ Prefer a topic over a branch and that over a commit."
   "Create a new issue for the current repository."
   (interactive)
   (let* ((repo (forge-get-repository t))
-         (buf (forge--prepare-post-buffer repo "new-issue")))
+         (buf (forge--prepare-post-buffer repo "new-issue"
+                                          :header "New Issue")))
     (with-current-buffer buf
       (setq forge--buffer-post-object repo)
       (setq forge--submit-post-function 'forge--submit-create-issue))
@@ -344,7 +346,8 @@ Prefer a topic over a branch and that over a commit."
   (let* ((topic (car magit-refresh-args))
          (buf (forge--prepare-post-buffer
                (forge-get-repository topic)
-               (format "%s:new-comment" (oref topic number)))))
+               (format "%s:new-comment" (oref topic number))
+               :header "New Comment")))
     (with-current-buffer buf
       (setq forge--buffer-post-object topic)
       (setq forge--submit-post-function 'forge--submit-create-post))
@@ -363,7 +366,13 @@ Prefer a topic over a branch and that over a commit."
                  (forge-post  (format "%s:%s"
                                       (oref (forge-get-topic post) number)
                                       (oref post number))))
-               (forge-get-repository post))))
+               (forge-get-repository post)
+               :header
+               (cl-typecase post
+                 (forge-topic (format "Edit #%s"
+                                      (oref post number)))
+                 (forge-post  (format "Edit #%s (comment)"
+                                      (oref (forge-get-topic post) number)))))))
     (with-current-buffer buf
       (setq forge--buffer-post-object post)
       (setq forge--submit-post-function 'forge--submit-edit-post)
