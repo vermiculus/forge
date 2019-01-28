@@ -80,6 +80,12 @@
   (forge--format-url (forge-get-topic post) slot
                      `(,@spec (?I . ,(oref post number)))))
 
+(cl-defmethod forge--prepare-post-edit-buffer-for ((post forge-post))
+  (let ((topic-num (oref (forge-get-topic post) number)))
+    (forge--prepare-post-buffer (format "%s:%s" topic-num (oref post number))
+                                (forge-get-repository post)
+                                :header (format "Edit #%s (comment)" topic-num))))
+
 ;;; Mode
 
 (defvar forge-post-mode-map

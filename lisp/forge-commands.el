@@ -359,20 +359,7 @@ Prefer a topic over a branch and that over a commit."
   "Edit an existing post."
   (interactive)
   (let* ((post (forge-post-at-point))
-         (buf (forge--prepare-post-buffer
-               (cl-typecase post
-                 (forge-topic (format "%s"
-                                      (oref post number)))
-                 (forge-post  (format "%s:%s"
-                                      (oref (forge-get-topic post) number)
-                                      (oref post number))))
-               (forge-get-repository post)
-               :header
-               (cl-typecase post
-                 (forge-topic (format "Edit #%s"
-                                      (oref post number)))
-                 (forge-post  (format "Edit #%s (comment)"
-                                      (oref (forge-get-topic post) number)))))))
+         (buf (forge--prepare-post-edit-buffer-for post)))
     (with-current-buffer buf
       (setq forge--buffer-post-object post)
       (setq forge--submit-post-function 'forge--submit-edit-post)

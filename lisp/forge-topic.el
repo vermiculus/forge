@@ -216,6 +216,12 @@ The following %-sequences are supported:
       (replace-regexp-in-string "\r\n" "\n" string t t)
     ""))
 
+(cl-defmethod forge--prepare-post-edit-buffer-for ((topic forge-topic))
+  (let ((topic-num (oref topic number)))
+    (forge--prepare-post-buffer topic-num
+                                (forge-get-repository topic)
+                                :header (format "Edit #%s" topic-num))))
+
 ;;; Mode
 
 (defvar forge-topic-mode-map
