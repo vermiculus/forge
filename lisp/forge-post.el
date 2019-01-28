@@ -97,7 +97,7 @@
 (defvar-local forge--cancel-post-function nil)
 (defvar-local forge--pre-post-buffer nil)
 
-(defun forge--prepare-post-buffer (filename)
+(defun forge--prepare-post-buffer (repo filename)
   (let ((file (magit-git-dir
                (convert-standard-filename
                 (concat "magit/posts/" filename)))))
@@ -107,6 +107,9 @@
           (buf (find-file-noselect file)))
       (with-current-buffer buf
         (forge-post-mode)
+        (magit-set-header-line-format
+         (concat (propertize (concat (oref repo owner) "/" (oref repo name)) 'face 'bold)
+                 " (" (oref repo forge) ")"))
         (setq forge--pre-post-buffer prevbuf)
         (when resume
           (forge--display-post-buffer buf)
